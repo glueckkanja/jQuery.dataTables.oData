@@ -31,9 +31,14 @@ function fnServerOData(sUrl, aoData, fnCallback, oSettings) {
 
     // If OData service is placed on the another domain use JSONP.
     var bJSONP = oSettings.oInit.bUseODataViaJSONP;
+    var sOverrideSelect = oSettings.oInit.sOverrideSelect;
 
     if (bJSONP) {
         data.$callback = "odatatable_" + (oSettings.oFeatures.bServerSide ? oParams.sEcho : ("load_" + Math.floor((Math.random() * 1000) + 1)));
+    }
+
+    if (sOverrideSelect) {
+        data.$select = sOverrideSelect;
     }
 
     $.each(oSettings.aoColumns, function (i, value) {
@@ -44,10 +49,12 @@ function fnServerOData(sUrl, aoData, fnCallback, oSettings) {
         if (sFieldName === null || !isNaN(Number(sFieldName))) {
             return;
         }
-        if (data.$select == null) {
-            data.$select = sFieldName;
-        } else {
-            data.$select += "," + sFieldName;
+        if (!sOverrideSelect) {
+            if (data.$select == null) {
+                data.$select = sFieldName;
+            } else {
+                data.$select += "," + sFieldName;
+            }
         }
     });
 
